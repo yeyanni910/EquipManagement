@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.project.equipmanagement.ui.activity.MainActivity">
+    
+    <com.project.equipmanagement.ui.view.TopBarView
+        android:id="@+id/top_bar_main"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_height"
+        app:closeBtnShow="false"
+        app:leftBtn="@drawable/icon_scan"
+        app:rightBtn="@drawable/personal">
+    </com.project.equipmanagement.ui.view.TopBarView>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_red_light"/>
+
+    <com.project.equipmanagement.ui.view.MainItemView
+        android:id="@+id/main_my_task"
+        style="@style/style_main_view"
+        app:mainTitleText="我的任务"
+        app:mainContentText="0条"
+        app:mainContentColor="@color/main_color"
+        app:mainLeftImage="@drawable/my_task"
+        app:mainRightImage="@drawable/icon_right_arrow"
+        ></com.project.equipmanagement.ui.view.MainItemView>
+
+    <com.project.equipmanagement.ui.view.MainItemView
+        android:id="@+id/main_launch_process"
+        style="@style/style_main_view"
+        app:mainTitleText="发起流程"
+        app:mainContentText="点击发起新流程"
+        app:mainLeftImage="@drawable/launch_process"
+        app:mainRightImage="@drawable/icon_right_arrow"
+        ></com.project.equipmanagement.ui.view.MainItemView>
+
+    <com.project.equipmanagement.ui.view.MainItemView
+        android:id="@+id/main_process_launched"
+        style="@style/style_main_view"
+        app:mainTitleText="我发起的流程"
+        app:mainContentText="0条"
+        app:mainContentColor="@color/main_color"
+        app:mainLeftImage="@drawable/process_launched"
+        app:mainRightImage="@drawable/icon_right_arrow"
+        ></com.project.equipmanagement.ui.view.MainItemView>
+
+    <com.project.equipmanagement.ui.view.MainItemView
+        android:id="@+id/main_my_approval"
+        style="@style/style_main_view"
+        app:mainTitleText="我审批的流程"
+        app:mainContentText="0条"
+        app:mainContentColor="@color/main_color"
+        app:mainLeftImage="@drawable/my_approval"
+        app:mainRightImage="@drawable/icon_right_arrow"
+        ></com.project.equipmanagement.ui.view.MainItemView>
+</LinearLayout>
