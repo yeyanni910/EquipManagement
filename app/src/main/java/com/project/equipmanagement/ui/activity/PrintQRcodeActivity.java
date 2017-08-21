@@ -6,14 +6,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lvrenyang.io.BTPrinting;
@@ -24,10 +24,8 @@ import com.project.equipmanagement.R;
 import com.project.equipmanagement.utils.Prints;
 import com.project.equipmanagement.utils.UserUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -47,7 +45,10 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     Button btnPrint;
     @Bind(R.id.btn_search_bluetooth)
     Button btnSearchBluetooth;
-
+    @Bind(R.id.tv_print_title)
+    TextView tvPrintTitle;
+    @Bind(R.id.pb_search)
+    ProgressBar pbSearch;
 
     PrintQRcodeActivity mPrintActivity;
     private BroadcastReceiver broadcastReceiver = null;
@@ -58,48 +59,53 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     Page mPage = new Page();
     Label mLabel = new Label();
     BTPrinting mBt = new BTPrinting();
+    BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_print_qrcode);
         ButterKnife.bind(this);
-        this.setTitle("搜索到的设备");
         mPrintActivity = this;
           /* 启动蓝牙 */
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (null != adapter) {
-            if (!adapter.isEnabled()) {
-                if (!adapter.enable()) {
-                    finish();
-                    return;
-                }
-            }
-        }
+
         mBt.SetCallBack(this);
         mPage.Set(mBt);
         mLabel.Set(mBt);
 
-        if (!adapter.isEnabled()) {
-            if (adapter.enable()) {
-                while (!adapter.isEnabled())
-                    ;
-            } else {
-                finish();
-                return;
-            }
-        }
-
-        adapter.cancelDiscovery();
-        lvDevice.removeAllViews();
-        adapter.startDiscovery();
+        initConnectDevice();
 
         initBroadcast();
+        pbSearch.setVisibility(View.GONE);
 
         btnPrint.setEnabled(false);
         btnDisconnect.setEnabled(false);
     }
 
+    private void initConnectDevice() {
+        if (adapter.enable()) {
+            Set<BluetoothDevice> devices = adapter.getBondedDevices();
+            if (devices != null) {
+                tvPrintTitle.setText("已配对蓝牙设备：");
+                if (devices.size() > 0) {
+                    for (Iterator<BluetoothDevice> it = devices.iterator(); it.hasNext(); ) {
+                        BluetoothDevice device = it.next();
+                        //自动连接已有蓝牙设备
+//                                createBond(device, null);
+                        setLvDevice(device, mPrintActivity);
+                    }
+                }
+            } else {
+                tvPrintTitle.setText("搜索到的蓝牙设备");
+                adapter.cancelDiscovery();
+                lvDevice.removeAllViews();
+                adapter.startDiscovery();
+            }
+        }else {
+            finish();
+            return;
+        }
+    }
 
     /**
      * print
@@ -124,20 +130,9 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     @OnClick(R.id.btn_search_bluetooth)
     void searchBlueTooth() {
         //TODO 搜索蓝牙设备
-    }
-
-    public static Bitmap getBitmap(String path) throws IOException {
-
-        URL url = new URL(path);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setConnectTimeout(5000);
-        conn.setRequestMethod("GET");
-        if (conn.getResponseCode() == 200) {
-            InputStream inputStream = conn.getInputStream();
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            return bitmap;
-        }
-        return null;
+        adapter.cancelDiscovery();
+        lvDevice.removeAllViews();
+        adapter.startDiscovery();
     }
 
 
@@ -220,7 +215,8 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                     Button btn = (Button) lvDevice.getChildAt(i);
                     btn.setEnabled(false);
                 }
-                Toast.makeText(mPrintActivity, "Connected", Toast.LENGTH_SHORT)
+                dissmissProgressDialog();
+                Toast.makeText(mPrintActivity, "连接成功", Toast.LENGTH_SHORT)
                         .show();
             }
         });
@@ -240,7 +236,8 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                     Button btn = (Button) lvDevice.getChildAt(i);
                     btn.setEnabled(true);
                 }
-                Toast.makeText(mPrintActivity, "Failed", Toast.LENGTH_SHORT).show();
+                dissmissProgressDialog();
+                Toast.makeText(mPrintActivity, "连接失败", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -264,7 +261,9 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
         });
     }
 
-
+    /**
+     * 初始化广播
+     */
     private void initBroadcast() {
         broadcastReceiver = new BroadcastReceiver() {
 
@@ -274,56 +273,20 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                 String action = intent.getAction();
                 BluetoothDevice device = intent
                         .getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
+                tvPrintTitle.setText("搜索到的蓝牙设备：");
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                     if (device == null)
                         return;
-                    final String address = device.getAddress();
-                    String name = device.getName();
-                    if (name == null)
-                        name = "BT";
-                    else if (name.equals(address))
-                        name = "BT";
-                    Button button = new Button(context);
-                    button.setText(name + ": " + address);
-
-                    for (int i = 0; i < lvDevice.getChildCount(); ++i) {
-                        Button btn = (Button) lvDevice.getChildAt(i);
-                        if (btn.getText().equals(button.getText())) {
-                            return;
-                        }
-                    }
-
-                    button.setGravity(Gravity.CENTER_VERTICAL
-                            | Gravity.LEFT);
-                    button.setOnClickListener(new View.OnClickListener() {
-
-                        public void onClick(View arg0) {
-                            // TODO Auto-generated method stub
-                            Toast.makeText(mPrintActivity, "Connecting...",
-                                    Toast.LENGTH_SHORT).show();
-//                            btnSearch.setEnabled(false);
-                            lvDevice.setEnabled(false);
-                            for (int i = 0; i < lvDevice
-                                    .getChildCount(); ++i) {
-                                Button btn = (Button) lvDevice
-                                        .getChildAt(i);
-                                btn.setEnabled(false);
-                            }
-                            btnDisconnect.setEnabled(false);
-                            btnPrint.setEnabled(false);
-                            es.submit(new TaskOpen(mBt, address, mPrintActivity));
-                        }
-                    });
-                    button.getBackground().setAlpha(100);
-                    lvDevice.addView(button);
+                    setLvDevice(device, mPrintActivity);
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED
                         .equals(action)) {
-                    showProgressDialog("正在搜索蓝牙设备");
+                    pbSearch.setVisibility(View.VISIBLE);
+                    pbSearch.setIndeterminate(true);
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
                         .equals(action)) {
                     dissmissProgressDialog();
-//                    es.submit(new TaskLoadUrlBitmap());
+                    pbSearch.setVisibility(View.GONE);
+                    pbSearch.setIndeterminate(false);
                 }
 
             }
@@ -335,6 +298,46 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
         intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(broadcastReceiver, intentFilter);
     }
+
+    private void setLvDevice(BluetoothDevice device, Context context) {
+        final String address = device.getAddress();
+        String name = device.getName();
+        if (name == null)
+            name = "BT";
+        else if (name.equals(address))
+            name = "BT";
+        Button button = new Button(context);
+        button.setText(name + ": " + address);
+
+        for (int i = 0; i < lvDevice.getChildCount(); ++i) {
+            Button btn = (Button) lvDevice.getChildAt(i);
+            if (btn.getText().equals(button.getText())) {
+                return;
+            }
+        }
+        button.setGravity(Gravity.CENTER_VERTICAL
+                | Gravity.LEFT);
+        button.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View arg0) {
+                // TODO Auto-generated method stub
+                showProgressDialog("正在连接蓝牙");
+                lvDevice.setEnabled(false);
+                for (int i = 0; i < lvDevice
+                        .getChildCount(); ++i) {
+                    Button btn = (Button) lvDevice
+                            .getChildAt(i);
+                    btn.setEnabled(false);
+                }
+                btnDisconnect.setEnabled(false);
+                btnPrint.setEnabled(false);
+                es.submit(new TaskOpen(mBt, address, mPrintActivity));
+            }
+        });
+        button.getBackground().setAlpha(100);
+        lvDevice.addView(button);
+    }
+
 
     private void uninitBroadcast() {
         if (broadcastReceiver != null)

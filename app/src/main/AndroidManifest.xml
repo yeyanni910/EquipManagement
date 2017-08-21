@@ -59,7 +59,7 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name=".ui.activity.PrintQRcodeActivity"
-            android:theme="@style/PrintTheme"></activity>
+            android:theme="@style/Theme.ActivityDialogStyle"></activity>
     </application>
 
 </manifest>
