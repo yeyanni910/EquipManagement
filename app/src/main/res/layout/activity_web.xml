@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         app:closeBtnShow="true"
-        app:leftBtn="@drawable/icon_arrow_left"
+        app:leftBtnResource="@drawable/icon_arrow_left"
+        app:rightBtn="@drawable/icon_refresh"
         >
     </com.project.equipmanagement.ui.view.TopBarView>
 

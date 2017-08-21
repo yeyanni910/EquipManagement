@@ -3,6 +3,7 @@
     <declare-styleable name="TopBarView">
         <attr name="closeBtnShow" format="boolean"></attr>
         <attr name="leftBtn" format="reference"/>
+        <attr name="leftBtnResource" format="reference"></attr>
         <attr name="rightBtn" format="reference"/>
     </declare-styleable>
 

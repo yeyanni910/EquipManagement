@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.project.equipmanagement.R;
 import com.project.equipmanagement.bean.MobUserInfo;
+import com.project.equipmanagement.constant.Constants;
 import com.project.equipmanagement.http.MobApi;
 import com.project.equipmanagement.http.MyCallBack;
 import com.project.equipmanagement.ui.view.TopBarView;
@@ -67,7 +68,7 @@ public class LoginActivity extends BaseActivity {
         }
 
         showProgressDialog("正在登录...");
-        MobApi.userLogin(userName, userPsd, 0x001, new MyCallBack() {
+        MobApi.userLogin(userName, userPsd, Constants.CONSTANT_LOGIN, new MyCallBack() {
             @Override
             public void onSuccess(int what, Object result) {
                 dissmissProgressDialog();

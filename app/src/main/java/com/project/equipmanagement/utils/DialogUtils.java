@@ -7,6 +7,8 @@ import android.view.View;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.List;
+
 
 /**
  * Created by maning on 16/6/22.
@@ -48,21 +50,44 @@ public class DialogUtils {
         void onCancel();
     }
 
-    public static MaterialDialog showMyListDialog(final Context context,String title, int contents, final OnDialogListCallback onDialogListCallback){
+    public static MaterialDialog showMyListDialog(final Context context, String title, String positiveBtnText,String negativeBntText,List<String> searchResult, final OnDialogListCallback onDialogListCallback){
         MaterialDialog materialDialog = new MaterialDialog.Builder(context)
                 .title(title)
-                .items(contents)
+                .items(searchResult)
+                .positiveText(positiveBtnText)
+                .negativeText(negativeBntText)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (onDialogListCallback != null){
+                            onDialogListCallback.onPritln();
+                        }
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (onDialogListCallback != null){
+                            onDialogListCallback.onDisconnect();
+                            dialog.dismiss();
+                        }
+                    }
+                })
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
                         onDialogListCallback.onSelection(dialog,itemView,position,text);
                     }
-                }).show();
+                })
+                .show();
+        materialDialog.setCanceledOnTouchOutside(false);
         return materialDialog;
     }
 
     public interface OnDialogListCallback {
 
+        void onPritln();
+        void onDisconnect();
         void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text);
     }
 

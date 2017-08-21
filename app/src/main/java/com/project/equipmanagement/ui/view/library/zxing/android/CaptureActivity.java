@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
@@ -184,9 +183,6 @@ public final class CaptureActivity extends Activity implements
 		//这里处理解码完成后的结果，此处将参数回传到Activity处理
 		if (fromLiveScan) {
 			beepManager.playBeepSoundAndVibrate();
-
-			Toast.makeText(this, "扫描成功", Toast.LENGTH_SHORT).show();
-
 			Intent intent = getIntent();
 			intent.putExtra("codedContent", rawResult.getText());
 			intent.putExtra("codedBitmap", barcode);

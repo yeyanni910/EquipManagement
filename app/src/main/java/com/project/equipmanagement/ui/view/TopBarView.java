@@ -28,6 +28,7 @@ public class TopBarView extends RelativeLayout implements View.OnClickListener {
     private Drawable leftImage;
     private Drawable rightImage;
     private boolean isShow;
+    private int leftResourceId;
 
     private onTitleBarClickListener onMyClickListener;
 
@@ -62,6 +63,9 @@ public class TopBarView extends RelativeLayout implements View.OnClickListener {
                 case R.styleable.TopBarView_leftBtn:
                     leftImage = ta.getDrawable(R.styleable.TopBarView_leftBtn);
                     break;
+                case R.styleable.TopBarView_leftBtnResource:
+                    leftResourceId = ta.getResourceId(R.styleable.TopBarView_leftBtnResource,0);
+                    break;
                 case R.styleable.TopBarView_rightBtn:
                     rightImage = ta.getDrawable(R.styleable.TopBarView_rightBtn);
                     break;
@@ -88,9 +92,12 @@ public class TopBarView extends RelativeLayout implements View.OnClickListener {
 
         if (null != leftImage)
             backView.setImageDrawable(leftImage);
+//            backView.setImageResource(leftResourceId);
         if (null != rightImage)
             rightView.setImageDrawable(rightImage);
-
+        if (0 != leftResourceId){
+            backView.setImageResource(leftResourceId);
+        }
         if (isShow){
             btnClose.setVisibility(VISIBLE);
         }else {

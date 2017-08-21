@@ -18,12 +18,13 @@
 
     <ImageView
         android:id="@+id/back_image"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:scaleType="centerInside"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="12dp"
+        android:src="@drawable/icon_scan"
+        android:scaleType="center"
         />
 
     <Button

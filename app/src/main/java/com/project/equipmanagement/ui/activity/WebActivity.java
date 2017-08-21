@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.DownloadListener;
@@ -20,6 +22,8 @@ import android.widget.ProgressBar;
 import com.project.equipmanagement.R;
 import com.project.equipmanagement.constant.Constants;
 import com.project.equipmanagement.ui.view.TopBarView;
+import com.project.equipmanagement.utils.DemoJavaScriptInterface;
+import com.project.equipmanagement.utils.MySnackbar;
 import com.project.equipmanagement.utils.NetUtils;
 
 import butterknife.Bind;
@@ -40,6 +44,8 @@ public class WebActivity extends AppCompatActivity implements TopBarView.onTitle
     private String titleContent;
     private String url;
 
+    private Handler mHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +57,30 @@ public class WebActivity extends AppCompatActivity implements TopBarView.onTitle
         initWebview();
 
         topBarWebPage.setClickListener(this);
+
+        initHandler();
+        webView.addJavascriptInterface(new DemoJavaScriptInterface(this,mHandler),"equipAdmin");
+        
+        
+    }
+
+    private void initHandler() {
+        mHandler  = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what){
+                    case Constants.CONSTANT_PUSH_PRINT_DIALOG:
+                        startActivity(new Intent(WebActivity.this,PrintQRcodeActivity.class));
+                        break;
+                    case Constants.CONSTANT_SHOW_NO_MESSAGE_DIALOG:
+                        MySnackbar.makeSnackBarBlue(topBarWebPage,"没有要打印的信息");
+                        break;
+                    default:
+                        break;
+                }
+                super.handleMessage(msg);
+            }
+        };
     }
 
     private void initIntent() {
@@ -164,7 +194,7 @@ public class WebActivity extends AppCompatActivity implements TopBarView.onTitle
 
     @Override
     public void onRightClick() {
-
+        webView.reload();
     }
 
     @Override
