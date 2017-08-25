@@ -1,6 +1,8 @@
 package com.project.equipmanagement.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -37,11 +39,17 @@ public class LoginActivity extends BaseActivity {
     @Bind(R.id.btn_login)
     Button btnLogin;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        sharedPreferences = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+
+        etUserName.setText(sharedPreferences.getString("userName", ""));
+        etPassword.setText(sharedPreferences.getString("password",""));
 
         topBarLogin.setTitle("登录");
     }
@@ -76,7 +84,7 @@ public class LoginActivity extends BaseActivity {
                 MobUserInfo userInfo = (MobUserInfo) result;
                 userInfo.setUserName(userName);
                 userInfo.setUserPsd(userPsd);
-                Log.e("CEST",userName+"========"+userPsd+"------"+userInfo.toString());
+                Log.e("TEST",userName+"========"+userPsd+"------"+userInfo.toString());
 
                 //保存用户信息
                 UserUtils.saveUserCache(userInfo);
@@ -99,6 +107,11 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void closeActivity(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userName", etUserName.getText().toString());
+        editor.putString("password", etPassword.getText().toString());
+        editor.commit();
+
         startActivity(new Intent(this,MainActivity.class));
         finish();
     }

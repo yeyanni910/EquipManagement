@@ -7,6 +7,8 @@ import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.project.equipmanagement.R;
@@ -16,6 +18,7 @@ import com.project.equipmanagement.constant.Constants;
 import com.project.equipmanagement.http.MobApi;
 import com.project.equipmanagement.http.MyCallBack;
 import com.project.equipmanagement.ui.view.MainItemView;
+import com.project.equipmanagement.ui.view.PullScrollView;
 import com.project.equipmanagement.ui.view.TopBarView;
 import com.project.equipmanagement.ui.view.library.zxing.android.CaptureActivity;
 import com.project.equipmanagement.utils.DialogUtils;
@@ -29,7 +32,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends BaseActivity implements TopBarView.onTitleBarClickListener{
+public class MainActivity extends BaseActivity implements TopBarView.onTitleBarClickListener, PullScrollView.onRefreshListener {
 
     @Bind(R.id.top_bar_main)
     TopBarView topBarMain;
@@ -43,6 +46,13 @@ public class MainActivity extends BaseActivity implements TopBarView.onTitleBarC
     MainItemView mainMyApproval;
     @Bind(R.id.main_check_device)
     MainItemView mainCheckDevice;
+    @Bind(R.id.main_imageview)
+    ImageView mainImageview;
+    @Bind(R.id.main_refresh_scrollview)
+    PullScrollView mainRefreshScrollview;
+    @Bind(R.id.head_progressBar)
+    ProgressBar headProgressBar;
+
 
     private static final int REQUEST_CODE_SCAN = 0x0000;
     private static final String DECODED_CONTENT_KEY = "codedContent";
@@ -55,6 +65,7 @@ public class MainActivity extends BaseActivity implements TopBarView.onTitleBarC
         ButterKnife.bind(this);
         topBarMain.setClickListener(this);
 
+        mainRefreshScrollview.setOnRefreshListener(this);
         MobUserInfo mobUserInfo = UserUtils.getUserCache();
         topBarMain.setTitle(mobUserInfo.getUserName());
         topBarMain.setRightImage(ContextCompat.getDrawable(this, R.drawable.icon_logout));
@@ -142,6 +153,7 @@ public class MainActivity extends BaseActivity implements TopBarView.onTitleBarC
         MobUserInfo mobUserInfo = UserUtils.getUserCache();
         String username = mobUserInfo.getUserName();
         String userMsg = getUserMsg();
+        headProgressBar.setVisibility(View.VISIBLE);
 
         MobApi.getFlowCount(username, userMsg, Constants.CONSTANT_GET_PROCESS_COUNT, new MyCallBack() {
             @Override
@@ -151,6 +163,8 @@ public class MainActivity extends BaseActivity implements TopBarView.onTitleBarC
                     mainMyApproval.setContentText(infoCount.getMyInitiatorFlow() + "条");
                     mainMyTask.setContentText(infoCount.getMyTasking() + "条");
                     mainProcessLaunched.setContentText(infoCount.getMyCurrentFlow() + "条");
+                    mainRefreshScrollview.stopRefresh();
+                    headProgressBar.setIndeterminate(false);
                 }
             }
 
@@ -208,4 +222,9 @@ public class MainActivity extends BaseActivity implements TopBarView.onTitleBarC
         super.onDestroy();
     }
 
+    @Override
+    public void refresh() {
+        headProgressBar.setIndeterminate(true);
+        getFlowCount();
+    }
 }

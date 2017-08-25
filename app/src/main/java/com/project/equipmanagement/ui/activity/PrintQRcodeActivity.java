@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -49,6 +50,8 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     TextView tvPrintTitle;
     @Bind(R.id.pb_search)
     ProgressBar pbSearch;
+    @Bind(R.id.ivb_close)
+    ImageButton ivbClose;
 
     PrintQRcodeActivity mPrintActivity;
     private BroadcastReceiver broadcastReceiver = null;
@@ -60,6 +63,8 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     Label mLabel = new Label();
     BTPrinting mBt = new BTPrinting();
     BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+
+    private String blueToothAddress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +85,14 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
 
         btnPrint.setEnabled(false);
         btnDisconnect.setEnabled(false);
+
+        blueToothAddress = UserUtils.getBlueToothAddress();
+        if ( blueToothAddress.isEmpty() ){
+            return;
+        }else{
+            showProgressDialog("正在连接蓝牙");
+            es.submit(new TaskOpen(mBt,blueToothAddress,mPrintActivity));
+        }
     }
 
     private void initConnectDevice() {
@@ -90,8 +103,6 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                 if (devices.size() > 0) {
                     for (Iterator<BluetoothDevice> it = devices.iterator(); it.hasNext(); ) {
                         BluetoothDevice device = it.next();
-                        //自动连接已有蓝牙设备
-//                                createBond(device, null);
                         setLvDevice(device, mPrintActivity);
                     }
                 }
@@ -101,7 +112,7 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                 lvDevice.removeAllViews();
                 adapter.startDiscovery();
             }
-        }else {
+        } else {
             finish();
             return;
         }
@@ -113,6 +124,7 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     @OnClick(R.id.btn_print)
     void print() {
         btnPrint.setEnabled(false);
+        showProgressDialog("正在打印");
         es.submit(new TaskPrint(mLabel));
     }
 
@@ -121,20 +133,25 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
      */
     @OnClick(R.id.btn_disconnect)
     void disconnect() {
+        blueToothAddress = "";
         es.submit(new TaskClose(mBt));
     }
 
     /**
-     * create qrCode
+     * searchBlueTooth
      */
     @OnClick(R.id.btn_search_bluetooth)
     void searchBlueTooth() {
-        //TODO 搜索蓝牙设备
         adapter.cancelDiscovery();
         lvDevice.removeAllViews();
         adapter.startDiscovery();
     }
 
+    @OnClick(R.id.ivb_close)
+    void closeActivityDialog(){
+        UserUtils.saveBlueToothAddress(blueToothAddress);
+        this.finish();
+    }
 
     public class TaskOpen implements Runnable {
         BTPrinting bt = null;
@@ -149,7 +166,6 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
 
         @Override
         public void run() {
-            // TODO Auto-generated method stub
             bt.Open(address, context);
         }
     }
@@ -166,7 +182,6 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
             // TODO Auto-generated method stub
 
             final boolean bPrintResult = Prints.PrintLabel(getApplicationContext(), label, 384, 320, UserUtils.getDeviceInfos());
-            showProgressDialog("正在打印");
             final boolean bIsOpened = label.GetIO().IsOpened();
 
             mPrintActivity.runOnUiThread(new Runnable() {
@@ -216,6 +231,7 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                     btn.setEnabled(false);
                 }
                 dissmissProgressDialog();
+                btnSearchBluetooth.setEnabled(false);
                 Toast.makeText(mPrintActivity, "连接成功", Toast.LENGTH_SHORT)
                         .show();
             }
@@ -236,8 +252,8 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                     Button btn = (Button) lvDevice.getChildAt(i);
                     btn.setEnabled(true);
                 }
-                dissmissProgressDialog();
                 Toast.makeText(mPrintActivity, "连接失败", Toast.LENGTH_SHORT).show();
+                dissmissProgressDialog();
             }
         });
     }
@@ -250,7 +266,7 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
             public void run() {
                 btnDisconnect.setEnabled(false);
                 btnPrint.setEnabled(false);
-//                btnSearch.setEnabled(true);
+                btnSearchBluetooth.setEnabled(true);
                 lvDevice.setEnabled(true);
                 for (int i = 0; i < lvDevice.getChildCount(); ++i) {
                     Button btn = (Button)
@@ -284,7 +300,6 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                     pbSearch.setIndeterminate(true);
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
                         .equals(action)) {
-                    dissmissProgressDialog();
                     pbSearch.setVisibility(View.GONE);
                     pbSearch.setIndeterminate(false);
                 }
@@ -307,8 +322,9 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
         else if (name.equals(address))
             name = "BT";
         Button button = new Button(context);
+        button.setPadding(20, 0, 20, 0);
+        button.setBackgroundResource(R.color.color_white);
         button.setText(name + ": " + address);
-
         for (int i = 0; i < lvDevice.getChildCount(); ++i) {
             Button btn = (Button) lvDevice.getChildAt(i);
             if (btn.getText().equals(button.getText())) {
@@ -321,7 +337,6 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
 
             public void onClick(View arg0) {
                 // TODO Auto-generated method stub
-                showProgressDialog("正在连接蓝牙");
                 lvDevice.setEnabled(false);
                 for (int i = 0; i < lvDevice
                         .getChildCount(); ++i) {
@@ -331,6 +346,8 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                 }
                 btnDisconnect.setEnabled(false);
                 btnPrint.setEnabled(false);
+                blueToothAddress = address;
+                showProgressDialog("正在连接蓝牙");
                 es.submit(new TaskOpen(mBt, address, mPrintActivity));
             }
         });
@@ -348,6 +365,7 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     protected void onDestroy() {
         super.onDestroy();
         uninitBroadcast();
+        UserUtils.saveBlueToothAddress(blueToothAddress);
         btnDisconnect.performClick();
     }
 }

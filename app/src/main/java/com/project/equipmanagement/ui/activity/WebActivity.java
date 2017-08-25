@@ -1,5 +1,6 @@
 package com.project.equipmanagement.ui.activity;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -70,6 +71,16 @@ public class WebActivity extends AppCompatActivity implements TopBarView.onTitle
             public void handleMessage(Message msg) {
                 switch (msg.what){
                     case Constants.CONSTANT_PUSH_PRINT_DIALOG:
+                          /* 启动蓝牙 */
+                        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+                        if (null != adapter) {
+                            if (!adapter.isEnabled()) {
+                                if (!adapter.enable()) {
+                                    finish();
+                                    return;
+                                }
+                            }
+                        }
                         startActivity(new Intent(WebActivity.this,PrintQRcodeActivity.class));
                         break;
                     case Constants.CONSTANT_SHOW_NO_MESSAGE_DIALOG:

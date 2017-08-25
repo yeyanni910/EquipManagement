@@ -18,10 +18,7 @@ public class ColoredSnackbar {
     private static final int green = 0xff4caf50;
     private static final int blue = 0xff2195f3;
     private static final int orange = 0xffffc107;
-    private static final int black = 0xff2e2e2e;
     private static final int white = 0xffFFFFFF;
-    private static final int nightTextColor = 0xff9AACEC;
-    private static final int nightBgColor = 0xff2A2F41;
 
     private static View getSnackBarLayout(Snackbar snackbar) {
         if (snackbar != null) {
@@ -42,14 +39,6 @@ public class ColoredSnackbar {
         }
 
         return snackbar;
-    }
-
-    public static Snackbar defaultInfo(Snackbar snackbar) {
-        return colorSnackBar(snackbar, black, white);
-    }
-
-    public static Snackbar defaultInfoNight(Snackbar snackbar) {
-        return colorSnackBar(snackbar, nightBgColor, nightTextColor);
     }
 
     public static Snackbar info(Snackbar snackbar) {

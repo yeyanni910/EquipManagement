@@ -30,12 +30,8 @@ public class MainItemView extends FrameLayout {
     private Drawable arrowImage;
 
     private String strTitle;
-//    private int titleTextColor;
-//    private int titleTextSize;
 
     private String strContent;
-//    private int contentTextColor;
-//    private int contentTextSize;
 
 
     public MainItemView(@NonNull Context context) {
@@ -50,7 +46,6 @@ public class MainItemView extends FrameLayout {
         super(context, attrs, defStyleAttr);
         getConfig(context,attrs);
         initView(context);
-
     }
 
     private void getConfig(Context context, AttributeSet attrs) {
@@ -63,12 +58,6 @@ public class MainItemView extends FrameLayout {
                 case R.styleable.MainItemView_mainTitleText:
                     strTitle = typedArray.getString(R.styleable.MainItemView_mainTitleText);
                     break;
-//                case R.styleable.MainItemView_mainTitleColor:
-//                    titleTextColor = typedArray.getColor(attr, Color.BLACK);
-//                    break;
-//                case R.styleable.MainItemView_mainTitleSize:
-//                    titleTextSize = typedArray.getDimensionPixelSize(attr,15);
-//                    break;
                 case R.styleable.MainItemView_mainLeftImage:
                     iconImage = typedArray.getDrawable(R.styleable.MainItemView_mainLeftImage);
                     break;
@@ -78,12 +67,6 @@ public class MainItemView extends FrameLayout {
                 case R.styleable.MainItemView_mainContentText:
                     strContent = typedArray.getString(R.styleable.MainItemView_mainContentText);
                     break;
-//                case R.styleable.MainItemView_mainContentSize:
-//                    contentTextSize = typedArray.getDimensionPixelSize(attr,12);
-//                    break;
-//                case R.styleable.MainItemView_mainContentColor:
-//                    contentTextColor = typedArray.getColor(R.styleable.MainItemView_mainContentColor,attr);
-//                    break;
             }
         }
         //用完回收容器
@@ -102,14 +85,10 @@ public class MainItemView extends FrameLayout {
         }
         if (null != strTitle){
             tvMainItemTitle.setText(strTitle);
-//            tvMainItemTitle.setTextColor(titleTextColor);
-//            tvMainItemTitle.setTextSize(titleTextSize);
         }
 
         if (null != strContent){
             tvMainItemContent.setText(strContent);
-//            tvMainItemContent.setTextColor(contentTextColor);
-//            tvMainItemContent.setTextSize(contentTextSize);
         }
 
         if (null != arrowImage){
@@ -123,5 +102,4 @@ public class MainItemView extends FrameLayout {
             tvMainItemContent.setTextColor(getResources().getColor(R.color.main_color));
         }
     }
-
 }

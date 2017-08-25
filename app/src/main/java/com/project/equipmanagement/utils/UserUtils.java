@@ -19,6 +19,8 @@ public class UserUtils {
 
     private static final String cache_DeviceInfo = "cache_DeviceInfo";
 
+    private static final String cache_BlueTooth_Address = "cache_BlueTooth_Address";
+
     //退出登录
     public static void quitLogin() {
         MyApplication.getACache().put(cache_UserLogin, new MobUserInfo());
@@ -61,6 +63,20 @@ public class UserUtils {
         deviceInfoList = java.util.Arrays.asList(deviceInfos);
         Log.e(UserUtils.class.getName(),deviceInfoList.size()+"get");
         return deviceInfoList;
+    }
+
+    public static void saveBlueToothAddress(String address){
+        if (address != null){
+            MyApplication.getACache().put(cache_BlueTooth_Address,address);
+        }
+    }
+
+    public static String getBlueToothAddress(){
+        String blueToothAddress = MyApplication.getACache().getAsString(cache_BlueTooth_Address);
+        if ( blueToothAddress == null || blueToothAddress.isEmpty()){
+            blueToothAddress = new String();
+        }
+        return blueToothAddress;
     }
 
 }
