@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class DeviceInfo implements Serializable {
     private int id;
     private String equipNo;
+    private String factoryNo;
 
     public int getId() {
         return id;
@@ -26,11 +27,20 @@ public class DeviceInfo implements Serializable {
         this.equipNo = equipNo;
     }
 
+    public String getFactoryNo() {
+        return factoryNo;
+    }
+
+    public void setFactoryNo(String factoryNo) {
+        this.factoryNo = factoryNo;
+    }
+
     @Override
     public String toString() {
         return  "deviceInfo {" +
                 "  id ='" + id + '\'' +
                 ", equipNo ='" + equipNo + '\'' +
+                ", factoryNo ='" + factoryNo + '\'' +
                 '}';
     }
 }

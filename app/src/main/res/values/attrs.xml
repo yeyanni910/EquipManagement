@@ -9,13 +9,7 @@
 
     <declare-styleable name="MainItemView">
         <attr name="mainTitleText" format="string|reference"></attr>
-        <attr name="mainTitleSize" format="dimension"></attr>
-        <attr name="mainTitleColor" format="color|reference"></attr>
-
         <attr name="mainContentText" format="string|reference"></attr>
-        <attr name="mainContentSize" format="dimension"></attr>
-        <attr name="mainContentColor" format="color"></attr>
-
         <attr name="mainLeftImage" format="reference"></attr>
         <attr name="mainRightImage" format="reference"></attr>
     </declare-styleable>

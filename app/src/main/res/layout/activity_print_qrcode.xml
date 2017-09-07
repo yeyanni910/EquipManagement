@@ -9,10 +9,19 @@
         <TextView
             android:id="@+id/tv_print_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:text="搜索到的设备："
             android:padding="10dp"/>
 
+        <ImageButton
+            android:id="@+id/ivb_close"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/icon_print_close"
+            android:background="@color/transparent"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            />
         <ProgressBar
             android:id="@+id/pb_search"
             style="?android:attr/progressBarStyleHorizontal"

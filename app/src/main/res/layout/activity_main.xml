@@ -14,12 +14,29 @@
         app:rightBtn="@drawable/icon_logout">
     </com.project.equipmanagement.ui.view.TopBarView>
 
-    <ScrollView
+    <com.project.equipmanagement.ui.view.PullScrollView
         android:id="@+id/main_refresh_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/top_bar_main"
         >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            >
+            <ProgressBar
+                android:id="@+id/head_progressBar"
+                style="@android:style/Widget.ProgressBar.Small.Inverse"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerInParent="true"
+                android:indeterminateDrawable="@drawable/drawable_loading"
+                android:indeterminateBehavior="repeat"
+                 />
+        </RelativeLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,7 +44,7 @@
         >
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/main_imageview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/holo_red_light" />
@@ -37,7 +54,6 @@
         style="@style/style_main_view"
         app:mainTitleText="我的任务"
         app:mainContentText="0条"
-        app:mainContentColor="@color/main_color"
         app:mainLeftImage="@drawable/my_task"
         app:mainRightImage="@drawable/icon_right_arrow"
         ></com.project.equipmanagement.ui.view.MainItemView>
@@ -56,7 +72,6 @@
         style="@style/style_main_view"
         app:mainTitleText="我发起的流程"
         app:mainContentText="0条"
-        app:mainContentColor="@color/main_color"
         app:mainLeftImage="@drawable/process_launched"
         app:mainRightImage="@drawable/icon_right_arrow"
         ></com.project.equipmanagement.ui.view.MainItemView>
@@ -66,7 +81,6 @@
         style="@style/style_main_view"
         app:mainTitleText="我审批的流程"
         app:mainContentText="0条"
-        app:mainContentColor="@color/main_color"
         app:mainLeftImage="@drawable/my_approval"
         app:mainRightImage="@drawable/icon_right_arrow"
         ></com.project.equipmanagement.ui.view.MainItemView>
@@ -76,10 +90,10 @@
         style="@style/style_main_view"
         app:mainTitleText="查看设备"
         app:mainContentText="点击查看设备"
-        app:mainContentColor="@color/main_color"
         app:mainLeftImage="@drawable/icon_check"
         app:mainRightImage="@drawable/icon_right_arrow"
         ></com.project.equipmanagement.ui.view.MainItemView>
     </LinearLayout>
-    </ScrollView>
+        </ScrollView>
+    </com.project.equipmanagement.ui.view.PullScrollView>
 </RelativeLayout>

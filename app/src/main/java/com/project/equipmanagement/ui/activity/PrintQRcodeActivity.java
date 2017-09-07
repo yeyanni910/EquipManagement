@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -61,10 +63,12 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     ExecutorService es = Executors.newScheduledThreadPool(30);
     Page mPage = new Page();
     Label mLabel = new Label();
+
     BTPrinting mBt = new BTPrinting();
     BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 
     private String blueToothAddress = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,12 +91,13 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
         btnDisconnect.setEnabled(false);
 
         blueToothAddress = UserUtils.getBlueToothAddress();
-        if ( blueToothAddress.isEmpty() ){
+        if (blueToothAddress.isEmpty()) {
             return;
-        }else{
+        } else {
             showProgressDialog("正在连接蓝牙");
-            es.submit(new TaskOpen(mBt,blueToothAddress,mPrintActivity));
+            es.submit(new TaskOpen(mBt, blueToothAddress, mPrintActivity));
         }
+
     }
 
     private void initConnectDevice() {
@@ -126,6 +131,7 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
         btnPrint.setEnabled(false);
         showProgressDialog("正在打印");
         es.submit(new TaskPrint(mLabel));
+//        es.submit(new TaskPrintPage(mPage));
     }
 
     /**
@@ -134,6 +140,15 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     @OnClick(R.id.btn_disconnect)
     void disconnect() {
         blueToothAddress = "";
+        for (int i = 0; i < lvDevice.getChildCount(); ++i) {
+            Button btn = (Button) lvDevice.getChildAt(i);
+            Drawable img_on, img_off;
+            Resources res = getResources();
+            img_off = res.getDrawable(R.drawable.launch_process);
+            // 调用setCompoundDrawables时，必须调用Drawable.setBounds()方法,否则图片不显示
+            img_off.setBounds(0, 0, img_off.getMinimumWidth(), img_off.getMinimumHeight());
+            btn.setCompoundDrawables(null, null, null, null); //设置左图标
+        }
         es.submit(new TaskClose(mBt));
     }
 
@@ -148,7 +163,7 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
     }
 
     @OnClick(R.id.ivb_close)
-    void closeActivityDialog(){
+    void closeActivityDialog() {
         UserUtils.saveBlueToothAddress(blueToothAddress);
         this.finish();
     }
@@ -213,7 +228,6 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
         public void run() {
             bt.Close();
         }
-
     }
 
     @Override
@@ -229,6 +243,15 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
                 for (int i = 0; i < lvDevice.getChildCount(); ++i) {
                     Button btn = (Button) lvDevice.getChildAt(i);
                     btn.setEnabled(false);
+                    if (btn.getText().toString().contains((blueToothAddress))) {
+//                        btn.setTextColor(R.color.main_color);
+                        Drawable img_on, img_off;
+                        Resources res = getResources();
+                        img_off = res.getDrawable(R.drawable.ic_selected);
+                        // 调用setCompoundDrawables时，必须调用Drawable.setBounds()方法,否则图片不显示
+                        img_off.setBounds(0, 0, img_off.getMinimumWidth(), img_off.getMinimumHeight());
+                        btn.setCompoundDrawables(img_off, null, null, null); //设置左图标
+                    }
                 }
                 dissmissProgressDialog();
                 btnSearchBluetooth.setEnabled(false);
@@ -321,7 +344,7 @@ public class PrintQRcodeActivity extends BaseActivity implements IOCallBack {
             name = "BT";
         else if (name.equals(address))
             name = "BT";
-        Button button = new Button(context);
+        final Button button = new Button(context);
         button.setPadding(20, 0, 20, 0);
         button.setBackgroundResource(R.color.color_white);
         button.setText(name + ": " + address);

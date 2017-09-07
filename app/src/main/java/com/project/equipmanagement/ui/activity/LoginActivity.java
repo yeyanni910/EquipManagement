@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.project.equipmanagement.R;
 import com.project.equipmanagement.bean.MobUserInfo;
@@ -34,8 +33,6 @@ public class LoginActivity extends BaseActivity {
     EditText etUserName;
     @Bind(R.id.et_password)
     EditText etPassword;
-    @Bind(R.id.btn_forget)
-    TextView btnForget;
     @Bind(R.id.btn_login)
     Button btnLogin;
 
